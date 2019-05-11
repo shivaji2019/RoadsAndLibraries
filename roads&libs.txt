@@ -1,0 +1,60 @@
+import java.io.*;
+import java.util.*;
+import java.text.*;
+import java.math.*;
+import java.util.regex.*;
+
+public class Solution {
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        int q = sc.nextInt();
+        for(int a = 0; a < q; a++){
+            int n = sc.nextInt();
+            boolean[] visited = new boolean[n];
+            Map<Integer, Set<Integer>> graph = new HashMap<>();
+            for (int i=0; i<n; i++) {
+                graph.put(i, new HashSet<Integer>());
+            }
+            int m = sc.nextInt();
+            int cost = sc.nextInt();
+            int pathcost = sc.nextInt();
+            for(int b = 0; b < m; b++){
+                int c1 = sc.nextInt();
+                int c2 = sc.nextInt();
+                graph.get(c1-1).add(c2-1);
+                graph.get(c2-1).add(c1-1);
+            }
+            System.out.println(mincost(graph, visited, cost, pathcost));
+        }
+        sc.close();
+    }
+    
+    private static long mincost(Map<Integer, Set<Integer>>graph, boolean[] visited, int cost, int pathcost) {
+        int cityCount = visited.length;        
+        if (cost<=pathcost) {
+            return (long)cityCount*cost;
+        }
+        
+        int count = 0;
+        for (int city : graph.keySet()) {
+            if (!visited[city]) {
+                count++;
+                visited[city] = true;
+                dfs(graph, visited, city);
+            }
+        }
+        int roadCount = cityCount-count;
+        return (long)count*cost + (long)roadCount*pathcost;
+    }
+    
+    private static void dfs(Map<Integer, Set<Integer>>graph, boolean[] visited, int city) {
+        Set<Integer> done = graph.get(city);
+        for (int n : done) {
+            if (!visited[n]) {
+                visited[n] = true;
+                dfs(graph, visited, n);
+            }
+        }
+    }
+}
